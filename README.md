@@ -31,7 +31,7 @@ Der findes flere metoder til at estimere position uden brug af GPS. I dette proj
 3. [Hashing](#Hashing)  
 4. [Trilaterering](#Trilaterering)
 5. [Teknologier](#Teknologier)
-6. [RSSI (Wi-Fi signalstyrke)](#RSSI_(Wi-Fi_signalstyrke))  
+6. [RSSI](#RSSI)  
 
 
 
@@ -216,7 +216,7 @@ Her er den matematiske løsning. Med tre sensorer på position (x₁,y₁), (x�
 
 ---
 
-# RSSI (Wi-Fi signalstyrke)
+# RSSI
 
 RSSI (*Received Signal Strength Indicator*) bruges til at estimere afstanden mellem to enheder ud fra signalstyrken.
 
