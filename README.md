@@ -68,15 +68,17 @@ Dokumentation og opgaveaflevering.
 
 ---
 
-## Gruppens undersøgelse og vurderinger omkring GDPR
 
-En ESP32 i "promiscuous mode" kan opfange **MAC-adresser** fra enheder i nærheden. MAC-adresser betragtes under GDPR som **personoplysninger**, fordi de kan identificere en person indirekte via deres enhed.
 
 
 
 ---
 # GDPR
 ## Hvilke GDPR-problemer rejser opgaven?
+
+## Gruppens undersøgelse og vurderinger omkring GDPR
+
+En ESP32 i "promiscuous mode" kan opfange **MAC-adresser** fra enheder i nærheden. MAC-adresser betragtes under GDPR som **personoplysninger**, fordi de kan identificere en person indirekte via deres enhed.
 
 **Lovligt grundlag** – Artikel 6
 - Vi opsamler MAC-adresser om personer, der *ikke* har givet samtykke
@@ -196,7 +198,16 @@ Et centralt krav er, at forholdet **altid skal reguleres skriftligt**. Aftalen s
 # Trilaterering
 <img width="322" height="272" alt="image" src="https://github.com/user-attachments/assets/57b6ff41-5805-4041-ae72-40aa85811ec6" />
 
+Hver sensor definerer en cirkel: centrum = sensorposition, radius = estimeret afstand
+Positionen er der hvor de tre cirkler skærer hinanden
 
+Trilaterering virker ved at hver sensor definerer en cirkel hvor radius = estimeret afstand. Den sande position er der hvor de tre cirkler skærer hinanden.
+Her er den matematiske løsning. Med tre sensorer på position (x₁,y₁), (x₂,y₂), (x₃,y₃) og afstande d₁, d₂, d₃ opstiller vi to ligninger ved at trække cirkelligningerne fra hinanden (det eliminerer de kvadratiske led):
+
+```
+2(x₂-x₁)·x + 2(y₂-y₁)·y = d₁²-d₂² - x₁²+x₂² - y₁²+y₂²
+2(x₃-x₁)·x + 2(y₃-y₁)·y = d₁²-d₃² - x₁²+x₃² - y₁²+y₃²
+```
 
 # Teknologier
 **Sammenligning af teknologier til indendørs positioning med ESP32**
