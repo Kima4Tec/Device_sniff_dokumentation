@@ -12,7 +12,7 @@ Master ESP32: https://github.com/Kima4Tec/Sniff_master
 Slave ESP32: https://github.com/Kima4Tec/Sniff_slave  
 
 Heatmap ved brug af MQTT: https://github.com/Kima4Tec/Device_sniff_dokumentation/blob/main/heatmap_mqtt.py  
-Vi sendte først til mqtt, hvorfra vi lavede heatmap, men vi misforstod, da vi blev bedt om ikke at sende til MQTT, at det kun var mellemregninger fra de tre esp32, vi ikke skulle sende, og derfor fandt vi på en anden løsning med UDP.   
+Vi sendte først til mqtt, hvorfra vi lavede heatmap, men vi misforstod, da vi blev bedt om ikke at sende til MQTT, at det kun var mellemregninger fra de tre esp32, vi ikke skulle sende, og derfor fandt vi på en anden løsning med UDP og slettede helt vores løsning med at sende til MQTT.   
 
 Heatmap ved brug af UDP og laptop: https://github.com/Kima4Tec/Device_sniff_dokumentation/blob/main/heatmap.py     
 ```
@@ -23,7 +23,7 @@ Slave B ──UDP──┘   (port 5006)
 ```
 
 ## Introduktion
-Der findes flere metoder til at estimere position uden brug af GPS. I dette projekt undersøges især teknologier baseret på Wi-Fi og ESP32-enheder. Undersøgelse har strukket sig over tre dage, blandet med et andet smiley-projekt, hvor en bruger skulle tilkendegive tilfredshed ved et tryk på en knap. 
+Der findes flere metoder til at estimere position uden brug af GPS. I dette projekt undersøges især teknologier baseret på Wi-Fi og ESP32-enheder. Undersøgelse har strukket sig over fire dage, blandet med et andet smiley-projekt, hvor en bruger skulle tilkendegive tilfredshed ved et tryk på en knap. 
 
 ## Logbog
 ### Dag 1
@@ -48,6 +48,8 @@ https://github.com/Kima4Tec/WifiSniff
 ### Dag 3
 Vi arbejder videre med ESP-NOW.
 
+### Dag 4
+Dokumentation og opgaveaflevering.
 
 
 ---
@@ -80,10 +82,34 @@ En ESP32 i "promiscuous mode" kan opfange **MAC-adresser** fra enheder i nærhed
 **Sikkerhed**
 - Er vores MQTT-broker sikret (TLS, autentificering)?
 - Hvem har adgang til dataene?
-- Vi bruger TLS og autentificering i forbindelsen med MQTT-serveren, men alle på netværket kan læse data, der sendes op til MQTT-serveren, og det gør sikkerheden lille og viser, at vi ikke kan stole på databehandleren.
+- Vi bruger TLS og autentificering i forbindelsen med MQTT-serveren, men alle på netværket kan læse data, der sendes op til MQTT-serveren http://wilsons.local uden brug af ssl, og det gør sikkerheden lille og viser, at vi ikke kan stole på databehandleren.
 
 **Opbevaringsbegrænsning**
-- Data bliver slettet
+- MQTT er en protokol, ikke en database — den opbevarer som udgangspunkt **ingen data**. Men der er en undtagelse: Brokeren (wilsons.local) kan have en persistens-konfiguration der logger beskeder til disk — det er væsentligt at spørge ejeren om dette. Det er der tilsyneladende i dette tilfælde. Vi skal have aftale om, hvor længe disse data bliver gemt.
+
+**Hvor længe behandler vi data i vores projekt?**
+
+| Sted | Data | Levetid |
+|---|---|---|
+| Slave ESP32 | Rå MAC i ISR-queue | Millisekunder — overskrives løbende |
+| Master ESP32 | `macHash` + RSSI per enhed | Maks 30 sekunder — ryddes hvis enheden forsvinder |
+| Master ESP32 | Anonymt `devId` + position | Maks 30 sekunder |
+| Master ESP32 | Dagligt salt | Nulstilles ved midnat |
+| `heatmap.py` | Positioner i RAM | Kun mens programmet kører — intet gemmes til disk |
+| `heatmap.py` | Heatmap-grid | Kun i RAM, falmer løbende |
+
+**Det korte svar: vi gemmer intet permanent.** Alt lever kun i RAM og forsvinder når enhederne genstarter eller programmet lukkes.
+
+---
+
+**Opsummering**
+- Data behandles kun i realtid til et afgrænset formål (positionsestimering)
+- Ingen personfølsomme oplysninger forlader systemet (rå MAC hashes aldrig ud)
+- Der er ingen logfiler, ingen database, ingen langtidsopbevaring
+- Dagligt salt betyder at data ikke kan kobles på tværs af dage
+
+Det eneste usikre punkt er hvad brokerens ejer logger på `wilsons.local`.
+
 
 Vi har fundet information her: 
 https://pentests.dk/docs/gdpr-developers-guide/
@@ -129,7 +155,6 @@ Et centralt krav er, at forholdet **altid skal reguleres skriftligt**. Aftalen s
 - Den dataansvarliges forpligtelser og rettigheder
 - Krav om fortrolighed og sikkerhed
 
----
 ---
 
 
