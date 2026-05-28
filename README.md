@@ -3,6 +3,17 @@ Dokumentation til projekter omkring sniffing af devices
 
 ## Projektopgave, Positionsbestemmelse af enheder uden GPS dækning
 
+# Indholdsfortegnelse
+1. [Opgavebesvarelse](#Opgavebesvarelse)
+2. [Logbog](#Logbog)
+3. [GDPR](#GDPR)
+4. [Hashing](#Hashing)  
+5. [Trilaterering](#Trilaterering)
+6. [Teknologier](#Teknologier)
+7. [RSSI](#RSSI)
+
+
+# Opgavebesvarelse
 ### Projekt 1: ESP32 → MQTT → Broker → trilateration
 https://github.com/Kima4Tec/WifiSniff  
 
@@ -23,19 +34,14 @@ Slave B ──UDP──┘   (port 5006)
 ```
 
 ## Introduktion
-Der findes flere metoder til at estimere position uden brug af GPS. I dette projekt undersøges især teknologier baseret på Wi-Fi og ESP32-enheder. Undersøgelse har strukket sig over fire dage, blandet med et andet smiley-projekt, hvor en bruger skulle tilkendegive tilfredshed ved et tryk på en knap. 
+Der findes flere metoder til at estimere position uden brug af GPS (se [Teknologier](#Teknologier)). I dette projekt undersøges især teknologier baseret på Wi-Fi og ESP32-enheder, ESP-NOW og med en MQTT-server, læreren har opstillet i klasselokalet. Opgaven kan læses her:
+https://s0ren.github.io/FAG_17682_IoT_II/Opgaver/wifi_pos.html
 
-# Indholdsfortegnelse
-1. [Logbog](#Logbog)
-2. [GDPR](#GDPR)
-3. [Hashing](#Hashing)  
-4. [Trilaterering](#Trilaterering)
-5. [Teknologier](#Teknologier)
-6. [RSSI](#RSSI)  
+---
 
+[Home](#Indholdsfortegnelse)
 
-
-
+---
 
 # Logbog
 ### Dag 1
@@ -58,7 +64,12 @@ https://github.com/Kima4Tec/WifiSniff
 
 
 ### Dag 3
-Vi arbejder videre med ESP-NOW.
+Vi arbejder videre med ESP-NOW.- ✔ Wi-Fi sniffing
+- ✔ MQTT med TLS-kryptering
+- ✔ ISR-safe queue
+- ✔ RSSI → distance
+- ✔ channel hopping
+- ✔ node-positioner
 
 ### Dag 4
 Dokumentation og opgaveaflevering.   
@@ -209,6 +220,43 @@ Her er den matematiske løsning. Med tre sensorer på position (x₁,y₁), (x�
 2(x₂-x₁)·x + 2(y₂-y₁)·y = d₁²-d₂² - x₁²+x₂² - y₁²+y₂²
 2(x₃-x₁)·x + 2(y₃-y₁)·y = d₁²-d₃² - x₁²+x₃² - y₁²+y₃²
 ```
+trilateration bruges til at finde en position ved hjælp af flere kendte målepunkter.
+
+## Hvordan virker det?
+Tre eller flere ESP32-enheder placeres på kendte koordinater:
+
+- `(x1, y1)`
+- `(x2, y2)`
+- `(x3, y3)`
+
+Den mobile enhed måler RSSI til hver node, hvorefter afstanden estimeres.
+
+Ud fra afstandene beregnes en cirka-position.
+
+## Sikkerhed og præcision
+
+Positioneringen er aldrig 100 % præcis og afhænger af:
+
+- signalforhold
+- afstand til målepunkter
+- refleksioner
+- geometri mellem noderne
+
+### Typiske fejlkilder
+- flervejsudbredelse (*multipath*)
+- vinkelfejl
+- dårlig placering af referencepunkter
+- interferens på 2,4 GHz
+
+## Praktisk præcision
+
+| Miljø | Typisk præcision |
+|---|---|
+| Åbent område | 1–5 meter |
+| Indendørs | 2–10 meter |
+| RTK-GPS | Centimeter-niveau |
+
+Usikkerheden visualiseres ofte som et fejlområde eller fejlpolygon.
 
 ---
 
