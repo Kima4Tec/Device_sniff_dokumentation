@@ -29,8 +29,8 @@ Der findes flere metoder til at estimere position uden brug af GPS. I dette proj
 1. [Logbog](#Logbog)
 2. [GDPR](#GDPR)
 3. [Hashing](#Hashing)  
-4. Trilaterering](#Trilaterering)
-5. Teknologier](#Teknologier)  
+4. [Trilaterering](#Trilaterering)
+5. [Teknologier](#Teknologier)  
 
 
 
@@ -60,9 +60,12 @@ https://github.com/Kima4Tec/WifiSniff
 Vi arbejder videre med ESP-NOW.
 
 ### Dag 4
-Dokumentation og opgaveaflevering.
+Dokumentation og opgaveaflevering.   
+
+---
 
 [Home](#Indholdsfortegnelse)
+
 ---
 
 ## Gruppens undersøgelse og vurderinger omkring GDPR
