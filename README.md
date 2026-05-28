@@ -25,7 +25,13 @@ Slave B ──UDP──┘   (port 5006)
 ## Introduktion
 Der findes flere metoder til at estimere position uden brug af GPS. I dette projekt undersøges især teknologier baseret på Wi-Fi og ESP32-enheder. Undersøgelse har strukket sig over fire dage, blandet med et andet smiley-projekt, hvor en bruger skulle tilkendegive tilfredshed ved et tryk på en knap. 
 
-## Logbog
+# Indholdsfortegnelse
+
+
+
+
+
+# Logbog
 ### Dag 1
 Vi fandt ud at sniffe os til flere forskellige enheder i nærheden. Havde tanker på sikkerhed med hashing. Vi opsatte en mqtt server på pc. Herefter satte vi programmet til at søge på specifikke mobiler med kendte mac-adresser. Dette kræver tilladelse af den enkelte, der ejer mobilerne, der bliver sniffet, pga GDPR-regler (Se mere om GDPR regler her: 
 [GDPR](#GDPR)
@@ -184,33 +190,18 @@ Et centralt krav er, at forholdet **altid skal reguleres skriftligt**. Aftalen s
 
 
 
+# Sammenligning af teknologier til indendørs positioning med ESP32
+
+| Teknologi | Hvordan virker det? | Fordele | Ulemper | Egnet til projektet? |
+|---|---|---|---|---|
+| ESP32 → MQTT → Broker → trilateration | Alle ESP32-enheder sniffer WiFi-signaler og sender RSSI-data direkte til MQTT-server. Broker/backend udregner position via trilateration. | Simpel arkitektur, let debugging, central databehandling, nem visualisering, god skalerbarhed, let at integrere med dashboards/databaser | Kræver WiFi-netværk og broker, flere MQTT-forbindelser, mere netværkstrafik, backend skal samle alle målinger | Ja – meget god og stabil løsning |
+| ESP-NOW + Master ESP32 + MQTT | Slave-ESP32’er sender RSSI-data til en master via ESP-NOW. Master samler data og sender til MQTT. | Lav latency, mindre netværkstrafik, kun én MQTT-forbindelse, fungerer uden router mellem ESP32’er, mere professionel edge/gateway-arkitektur | Mere kompleks kode, ESP-NOW kræver samme WiFi-kanal, begrænset rækkevidde, sværere debugging | Ja – meget stærk løsning til projektet |
+| ESP-MESH | ESP32’er danner selvorganiserende mesh-netværk og videresender data mellem noder til root-node | Stor rækkevidde, selvhelende netværk, god til store områder, robust mod node-fejl | Kompleks opsætning, højere latency, mere RAM/CPU-forbrug, svær debugging | Muligt, men ofte overkill til mindre projekter |
+| RTT (Round Trip Time) | Måler tiden et signal bruger på at rejse mellem enheder og tilbage igen | Potentielt mere præcis afstandsbestemmelse end RSSI | ESP32 understøtter ikke præcis hardware-timing til RTT/Fine Timing Measurement (FTM), meget vanskelig implementering, kræver synkronisering | Ikke realistisk til dette projekt |
+| RSSI-trilateration | Afstand estimeres ud fra signalstyrke (RSSI), hvorefter position beregnes geometrisk | Simpel implementering, virker med standard ESP32 hardware, ingen aktiv forbindelse nødvendig | Lav præcision, påvirkes af vægge, mennesker og støj, signalstyrke varierer meget | Ja – mest realistiske metode med ESP32 |
 
 
 
 
-
-
-De vigtigste GDPR-krav
-Retsgrundlag — I skal have et gyldigt grundlag for behandlingen. For et skoleprojekt er det typisk legitim interesse (artikel 6(1)(f)), men det kræver at I kan argumentere for at interessen ikke overstiger de registreredes rettigheder.
-Dataminimering — I må kun indsamle det I faktisk har brug for. Overvej:
-
-Behøver vi gemme den fulde MAC, eller er et anonymt hash nok?
-Behøver vi gemme præcise tidsstempler?
-
-Opbevaringsbegrænsning — Data må ikke gemmes længere end nødvendigt. Definer en konkret slettefrist.
-Information til de registrerede — Personer hvis telefoner I scanner, skal i princippet informeres. I et kontrolleret forsøg (f.eks. kun kendte telefoner tilhørende jer selv) er det håndterbart.
-Hvad der gør jeres projekt mere acceptabelt
-
-Vi scanner kun kendte, specifikke MAC-adresser — ikke alle i nærheden
-Telefonerne tilhører sandsynligvis jer selv eller folk der har givet samtykke
-Det er et afgrænset eksperiment, ikke kontinuerlig overvågning
-
-Praktiske anbefalinger
-
-Hash MAC-adresserne inden I gemmer dem — SHA256(MAC) er ikke reversibelt og reducerer risikoen markant
-Indhent eksplicit samtykke fra ejerne af de telefoner I tracker
-Begræns adgang til MQTT-brokeren og den data der gemmes
-Slet data efter projektet er afsluttet
-Dokumentér hvad vi indsamler, hvorfor, og hvem der har adgang — selv en enkel side er nok til et skoleprojekt
 
 Kort sagt: fordi vi kun tracker kendte telefoner med ejernes samtykke, er vi i en relativt god position — men vi bør kunne dokumentere det samtykke og have en plan for datasletning.
