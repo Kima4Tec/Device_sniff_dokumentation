@@ -6,13 +6,15 @@ Dokumentation til projekter omkring sniffing af devices
 ### Projekt 1: ESP32 → MQTT → Broker → trilateration
 https://github.com/Kima4Tec/WifiSniff  
 
-### Projekt 2: ESP-NOW + Master ESP32 + MQTT
+### Projekt 2: ESP-NOW + Master ESP32 + MQTT  
 Master ESP32: https://github.com/Kima4Tec/Sniff_master  
-Slave ESP32: https://github.com/Kima4Tec/Sniff_slave  
-Heatmap ved brug af MQTT: https://github.com/Kima4Tec/Device_sniff_dokumentation/blob/main/heatmap_mqtt.py 
-Vi sendte først til mqtt, hvorfra vi lavede heatmap, men vi misforstod, da vi blev bedt om ikke at sende til MQTT, at det kun var mellemregninger fra de tre esp32, vi ikke skulle sende, og derfor fandt vi på en anden løsning med UDP.
 
-Heatmap ved brug af UDP og laptop: https://github.com/Kima4Tec/Device_sniff_dokumentation/blob/main/heatmap.py   
+Slave ESP32: https://github.com/Kima4Tec/Sniff_slave  
+
+Heatmap ved brug af MQTT: https://github.com/Kima4Tec/Device_sniff_dokumentation/blob/main/heatmap_mqtt.py  
+Vi sendte først til mqtt, hvorfra vi lavede heatmap, men vi misforstod, da vi blev bedt om ikke at sende til MQTT, at det kun var mellemregninger fra de tre esp32, vi ikke skulle sende, og derfor fandt vi på en anden løsning med UDP.   
+
+Heatmap ved brug af UDP og laptop: https://github.com/Kima4Tec/Device_sniff_dokumentation/blob/main/heatmap.py     
 ```
 Slave A ──UDP──┐
                ├──► Master ESP32 ──UDP──► Laptop :5005 ──► heatmap.py
