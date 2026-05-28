@@ -215,6 +215,52 @@ Her er den matematiske løsning. Med tre sensorer på position (x₁,y₁), (x�
 
 ---
 
+# RSSI (Wi-Fi signalstyrke)
+
+RSSI (*Received Signal Strength Indicator*) bruges til at estimere afstanden mellem to enheder ud fra signalstyrken.
+
+## Hvordan virker det?
+En ESP32 måler styrken på et modtaget Wi-Fi-signal i dBm:
+
+- **-30 dBm** → meget tæt på
+- **-90 dBm** → langt væk
+
+Signalstyrken kan derefter omregnes til en estimeret afstand ved hjælp af matematiske modeller som:
+
+- *Log-Distance Path Loss Model*
+
+## Fordele
+- Indbygget i ESP32
+- Simpel at implementere
+- Lavt strømforbrug
+
+## Ulemper
+RSSI er upræcist, fordi signalstyrken påvirkes af:
+
+- vægge og beton
+- mennesker
+- refleksioner
+- antennens retning
+- møbler og metal
+
+## Præcision
+Indendørs præcision ligger typisk på:
+
+- **2–8 meters usikkerhed**
+
+RSSI fungerer derfor bedst til:
+- zonedetektion
+- rum-positionering
+- grove afstandsvurderinger
+
+
+---
+
+[Home](#Indholdsfortegnelse)
+
+---
+
+
 # Teknologier
 **Sammenligning af teknologier til indendørs positioning med ESP32**
 
