@@ -58,18 +58,14 @@ Ved at salte forhindres rainbow table-angreb – Uden salt kan en angriber bruge
 )
 Vi har finder kun afstand fra en kendt mobil og registrerer desuden antal af fundne devices uden at bruge deres mac-adresser.
 Vi opstartede desuden nyt projekt, hvor vi undersøger mulighederne med esp-now, hvor esp32-devices kommunikerer med hinanden. 
-Du finder programmet her: 
-
-https://github.com/Kima4Tec/WifiSniff
 
 
 ### Dag 3
-Vi arbejder videre med ESP-NOW.- ✔ Wi-Fi sniffing
-- ✔ MQTT med TLS-kryptering
-- ✔ ISR-safe queue
-- ✔ RSSI → distance
-- ✔ channel hopping
-- ✔ node-positioner
+Vi arbejder videre med ESP-NOW. Den ene esp32 har vi gjort til master, og de andre slaver. Alle tre sender positioner på de mobile enheder i området. Vi lavede først et projekt, hvor alle esp-enheder sendte krypterede data til MQTT, masteren udregnede trilateration og data blev herefter sendt til et heatmap lavet i Python. Da vi fik besked om, ikke at sende til MQTT, misforstod vi, at det kun var mellemregninger fra de tre esp32, vi ikke skulle sende, og derfor fandt vi på en anden løsning med UDP og slettede helt vores løsning med at sende til MQTT.
+I den endelige løsning sniffer alle tre ESP32'er WiFi-pakker i promiscuous mode. For at øge sandsynligheden for at opdage enheder på forskellige WiFi-kanaler hopper slaverne mellem kanal 1, 6 og 11 hvert 150ms — de tre primære ikke-overlappende kanaler. Masteren er låst til kanal 6 for at holde sin WiFi-forbindelse stabil.
+Når en enhed opdages, hashes dens MAC-adresse med SHA256 kombineret med et statisk salt, så rå MAC-adresser aldrig forlader den enkelte ESP32. Masteren anonymiserer desuden enhederne yderligere med et dagligt skiftende salt, så det samme anonyme ID ikke kan bruges til at tracke en enhed på tværs af dage — dette er vores primære GDPR-tiltag.
+Slaverne sender deres målinger via UDP direkte til masterens lokale IP. Masteren kombinerer målinger fra alle tre sensorer og beregner enhedens position ved hjælp af trilaterering — en metode der bruger den estimerede afstand fra tre kendte punkter til at finde skæringspunktet for tre cirkler. Afstanden estimeres ud fra RSSI-værdien. Når færre end tre sensorer har data falder systemet tilbage til weighted centroid. Masteren sender de beregnede positioner via UDP til en Python-applikation på en laptop, der viser et live heatmap over rummet med matplotlib.
+Data gemmes udelukkende i RAM og lever maksimalt 30 sekunder — der skrives intet til disk og ingen personhenførbare oplysninger forlader systemet.
 
 ### Dag 4
 Dokumentation og opgaveaflevering.   
