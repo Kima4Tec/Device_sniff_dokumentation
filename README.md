@@ -4,13 +4,15 @@ Dokumentation til projekter omkring sniffing af devices
 ## Projektopgave, Positionsbestemmelse af enheder uden GPS dækning
 
 ### Projekt 1: ESP32 → MQTT → Broker → trilateration
-https://github.com/Kima4Tec/WifiSniff
+https://github.com/Kima4Tec/WifiSniff  
 
 ### Projekt 2: ESP-NOW + Master ESP32 + MQTT
 Master ESP32: https://github.com/Kima4Tec/Sniff_master  
 Slave ESP32: https://github.com/Kima4Tec/Sniff_slave  
-Heatmap ved brug af MQTT:   
-Heatmap ved brug af UDP og laptop: 
+Heatmap ved brug af MQTT: https://github.com/Kima4Tec/Device_sniff_dokumentation/blob/main/heatmap_mqtt.py 
+Vi sendte først til mqtt, hvorfra vi lavede heatmap, men vi misforstod, da vi blev bedt om ikke at sende til MQTT, at det kun var mellemregninger fra de tre esp32, vi ikke skulle sende, og derfor fandt vi på en anden løsning med UDP.
+
+Heatmap ved brug af UDP og laptop: https://github.com/Kima4Tec/Device_sniff_dokumentation/blob/main/heatmap.py   
 ```
 Slave A ──UDP──┐
                ├──► Master ESP32 ──UDP──► Laptop :5005 ──► heatmap.py
@@ -44,33 +46,48 @@ https://github.com/Kima4Tec/WifiSniff
 ### Dag 3
 Vi arbejder videre med ESP-NOW.
 
+
+
 ---
 
+## Gruppens undersøgelse og vurderinger omkring GDPR
 
-# Hashing
-
-**Fordele**
-
-- **Forhindrer rainbow table-angreb** – Uden salt kan en angriber bruge forudberegnede hash-tabeller til at reverse-engineer MAC-adresser. Saltet gør dette upraktisk.
-- **Unikhed på tværs af systemer** – To ESP32-noder med samme salt producerer samme anonyme ID for samme enhed, så du kan korrelere på tværs af noder. Eller omvendt: skifter du salt, får du helt andre IDs.
-- **Simpel implementering** – Din nuværende løsning er let at forstå og hurtig at køre på en microcontroller.
-
-**Ulemper**
-
-- **Hardkodet salt i `secrets.h`** – Hvis nogen får adgang til din firmware, kender de saltet og kan bruge det til at reverse-engineer specifikke MAC-adresser, de kender i forvejen.
-- **Statisk salt** – Du bruger ét fast salt for alle enheder og altid. Et *per-enhed* eller *tidsbaseret* salt ville give stærkere anonymisering.
-- **SHA-256 alene er hurtig** — Det er godt for performance på ESP32, men en angriber kan også hashe hurtigt. Til stærkere beskyttelse ville HMAC-SHA256 være mere korrekt (salt som nøgle, ikke blot præfiks/suffiks).
-- **Salt-længde ikke valideret** – `strlen(SALT)` antager at SALT er null-termineret og ikke for langt. Hvis `input`-bufferen (kun `6 + 20` bytes) overskrides, får du et buffer overflow.
+En ESP32 i "promiscuous mode" kan opfange **MAC-adresser** fra enheder i nærheden. MAC-adresser betragtes under GDPR som **personoplysninger**, fordi de kan identificere en person indirekte via deres enhed.
 
 
+
+---
 # GDPR
+## Hvilke GDPR-problemer rejser opgaven?
+
+**Lovligt grundlag** – Artikel 6
+- Vi opsamler MAC-adresser om personer, der *ikke* har givet samtykke
+- For et skoleprojekt er det typisk legitim interesse (artikel 6(1)(f))
+- Vi logger position + tid, hvilket er lokaliseringsdata
+- Vi transmitterer og gemmer data på en MQTT-broker. 
+
+**Dataminimering** – Artikel 5
+- Vi anonymiserer MAC-adresser med det samme. MAC-adresser bliver hashet og saltet, og devices får tildelt nyt id.
+- Vi gemmer ikke rå MAC-adresser på MQTT-brokeren.
+- Vi må kun indsamle, det vi faktisk har brug for. OPgaven lød på: Hvordan laver man positionsbestemmelse af f.eks. mobile enheder. Vi har indsamlet data fra alle devices i området, der kan måles med RSSI. Alle devices i klasselokalet var mobile, men vi kunne godt have udvidet projektet med kun at finde data på mobile enheder, der havde randomisering slået til. 
+
+**Formålsbegrænsning**
+- Hvad bruges dataene præcist til? Det skal være klart defineret.
+- Data bruges i et skoleforsøg, der går ud på at afstandsbedømme og vurdere, hvor mange devices, der er indenfor et område vha triangulering ved brug af tre esp32. Opgaven går bl.a. ud på at vurdere sikkerhedsregler ift. GDPR.
+
+**Sikkerhed**
+- Er vores MQTT-broker sikret (TLS, autentificering)?
+- Hvem har adgang til dataene?
+- Vi bruger TLS og autentificering i forbindelsen med MQTT-serveren, men alle på netværket kan læse data, der sendes op til MQTT-serveren, og det gør sikkerheden lille og viser, at vi ikke kan stole på databehandleren.
+
+**Opbevaringsbegrænsning**
+- Data bliver slettet
+
 Vi har fundet information her: 
 https://pentests.dk/docs/gdpr-developers-guide/
 og ved brug af AI Claude har vi fundet forpligtelser for databehandler og dataansvarlig:
-## Databehandler og Dataansvarlig (ikke "dataudgiver") under GDPR
 
----
-
+## Generelt om dataansvarlig og databehandler
 ### Dataansvarlig (Data Controller)
 
 Den fysiske eller juridiske person, myndighed, institution eller andet organ, der **alene eller sammen med andre afgør**, til hvilke formål og med hvilke hjælpemidler der må foretages behandling af personoplysninger.
@@ -111,24 +128,40 @@ Et centralt krav er, at forholdet **altid skal reguleres skriftligt**. Aftalen s
 - Krav om fortrolighed og sikkerhed
 
 ---
-
-### Hvornår er man hvad?
-
-| Situation | Rolle |
-|---|---|
-| Virksomhed der behandler egne kundedata | Dataansvarlig |
-| IT-leverandør der drifter et system med kundedata | Databehandler |
-| To virksomheder der fælles bestemmer formålet | Fælles dataansvarlige |
-| Databehandler der hyrer en underleverandør | Underdatabehandler |
-
 ---
 
 
+# Hashing
 
-Vi opsamler MAC-adresser fra personer der ikke har givet samtykke
-Vi logger position + tid, hvilket er lokaliseringsdata
-Vi transmitterer og gemmer data på en MQTT-broker
-Det er muligt at rekonstruere en persons bevægelser over tid
+**Fordele**
+
+- **Forhindrer rainbow table-angreb** – Uden salt kan en angriber bruge forudberegnede hash-tabeller til at reverse-engineer MAC-adresser. Saltet gør dette upraktisk.
+- **Unikhed på tværs af systemer** – To ESP32-noder med samme salt producerer samme anonyme ID for samme enhed, så du kan korrelere på tværs af noder. Eller omvendt: skifter du salt, får du helt andre IDs.
+- **Simpel implementering** – Din nuværende løsning er let at forstå og hurtig at køre på en microcontroller.
+
+**Ulemper**
+
+- **Hardkodet salt i `secrets.h`** – Hvis nogen får adgang til din firmware, kender de saltet og kan bruge det til at reverse-engineer specifikke MAC-adresser, de kender i forvejen.
+- **Statisk salt** – Du bruger ét fast salt for alle enheder og altid. Et *per-enhed* eller *tidsbaseret* salt ville give stærkere anonymisering.
+- **SHA-256 alene er hurtig** — Det er godt for performance på ESP32, men en angriber kan også hashe hurtigt. Til stærkere beskyttelse ville HMAC-SHA256 være mere korrekt (salt som nøgle, ikke blot præfiks/suffiks).
+- **Salt-længde ikke valideret** – `strlen(SALT)` antager at SALT er null-termineret og ikke for langt. Hvis `input`-bufferen (kun `6 + 20` bytes) overskrides, får du et buffer overflow.
+
+
+
+
+
+---
+
+# Trilaterering
+<img width="322" height="272" alt="image" src="https://github.com/user-attachments/assets/57b6ff41-5805-4041-ae72-40aa85811ec6" />
+
+
+
+
+
+
+
+
 
 De vigtigste GDPR-krav
 Retsgrundlag — I skal have et gyldigt grundlag for behandlingen. For et skoleprojekt er det typisk legitim interesse (artikel 6(1)(f)), men det kræver at I kan argumentere for at interessen ikke overstiger de registreredes rettigheder.
