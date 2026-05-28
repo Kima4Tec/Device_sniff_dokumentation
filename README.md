@@ -15,7 +15,7 @@ Vi fandt ud at sniffe os til flere forskellige enheder i nærheden. Havde tanker
 Vi er gået videre med vores sniffer-program, der bruger mqtt-serveren som modtager af de tre esp32s data med en broker (program skrevet i python), som samler data fra de tre esp32 og udregner afstand til en kendt mobil vha trilateration. Vi finder desuden, hvor mange andre devices, der er i nærheden.  
 Vi krypterer alle fundne mac-adresser med hashing, og da vi fandt ud af, at det ikke er sikkert nok, har vi også saltet disse data.
 Ved at salte forhindres rainbow table-angreb – Uden salt kan en angriber bruge forudberegnede hash-tabeller til at reverse-engineer MAC-adresser. Saltet gør dette upraktisk. (se yderligere om hashing her: 
-(#Hashing)[Hashing]
+[Hashing](#Hashing)
 )
 Vi har finder kun afstand fra en kendt mobil og registrerer desuden antal af fundne devices uden at bruge deres mac-adresser.
 Vi opstartede desuden nyt projekt, hvor vi undersøger mulighederne med esp-now. 
