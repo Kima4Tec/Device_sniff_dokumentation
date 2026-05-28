@@ -8,7 +8,9 @@ Der findes flere metoder til at estimere position uden brug af GPS. I dette proj
 
 ## Logbog
 ### Dag 1
-Vi fandt ud at sniffe os til flere forskellige enheder i nærheden. Havde tanker på sikkerhed med hashing. Vi opsatte en mqtt server på pc. Herefter satte vi programmet til at søge på specifikke mobiler med kendte mac-adresser. Dette kræver tilladelse af den enkelte, der ejer mobilerne, der bliver sniffet, pga GDPR-regler. Med MQTT-server på vores egen pc, er vi både dataansvarlige og databehandlere. Se længere nede i noterne omkring deres ansvar.
+Vi fandt ud at sniffe os til flere forskellige enheder i nærheden. Havde tanker på sikkerhed med hashing. Vi opsatte en mqtt server på pc. Herefter satte vi programmet til at søge på specifikke mobiler med kendte mac-adresser. Dette kræver tilladelse af den enkelte, der ejer mobilerne, der bliver sniffet, pga GDPR-regler (Se mere om GDPR regler her: 
+[GDPR](#GDPR)
+). Med MQTT-server på vores egen pc, er vi både dataansvarlige og databehandlere. Se længere nede i noterne omkring deres ansvar.
 
 
 ### Dag 2
@@ -30,3 +32,17 @@ Vi lavede
 
 
 # Hashing
+
+**Fordele**
+
+- **Forhindrer rainbow table-angreb** – Uden salt kan en angriber bruge forudberegnede hash-tabeller til at reverse-engineer MAC-adresser. Saltet gør dette upraktisk.
+- **Unikhed på tværs af systemer** – To ESP32-noder med samme salt producerer samme anonyme ID for samme enhed, så du kan korrelere på tværs af noder. Eller omvendt: skifter du salt, får du helt andre IDs.
+- **Simpel implementering** – Din nuværende løsning er let at forstå og hurtig at køre på en microcontroller.
+
+**Ulemper**
+
+- **Hardkodet salt i `secrets.h`** – Hvis nogen får adgang til din firmware, kender de saltet og kan bruge det til at reverse-engineer specifikke MAC-adresser, de kender i forvejen.
+- **Statisk salt** – Du bruger ét fast salt for alle enheder og altid. Et *per-enhed* eller *tidsbaseret* salt ville give stærkere anonymisering.
+- **SHA-256 alene er hurtig** — Det er godt for performance på ESP32, men en angriber kan også hashe hurtigt. Til stærkere beskyttelse ville HMAC-SHA256 være mere korrekt (salt som nøgle, ikke blot præfiks/suffiks).
+- **Salt-længde ikke valideret** – `strlen(SALT)` antager at SALT er null-termineret og ikke for langt. Hvis `input`-bufferen (kun `6 + 20` bytes) overskrides, får du et buffer overflow.
+
