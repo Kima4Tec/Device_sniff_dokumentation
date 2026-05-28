@@ -68,11 +68,6 @@ Dokumentation og opgaveaflevering.
 
 ---
 
-
-
-
-
----
 # GDPR
 ## Hvilke GDPR-problemer rejser opgaven?
 
@@ -171,8 +166,12 @@ Et centralt krav er, at forholdet **altid skal reguleres skriftligt**. Aftalen s
 - Den dataansvarliges forpligtelser og rettigheder
 - Krav om fortrolighed og sikkerhed
 
+
 ---
 
+[Home](#Indholdsfortegnelse)
+
+---
 
 # Hashing
 
@@ -190,8 +189,9 @@ Et centralt krav er, at forholdet **altid skal reguleres skriftligt**. Aftalen s
 - **Salt-længde ikke valideret** – `strlen(SALT)` antager at SALT er null-termineret og ikke for langt. Hvis `input`-bufferen (kun `6 + 20` bytes) overskrides, får du et buffer overflow.
 
 
+---
 
-
+[Home](#Indholdsfortegnelse)
 
 ---
 
@@ -208,6 +208,12 @@ Her er den matematiske løsning. Med tre sensorer på position (x₁,y₁), (x�
 2(x₂-x₁)·x + 2(y₂-y₁)·y = d₁²-d₂² - x₁²+x₂² - y₁²+y₂²
 2(x₃-x₁)·x + 2(y₃-y₁)·y = d₁²-d₃² - x₁²+x₃² - y₁²+y₃²
 ```
+
+---
+
+[Home](#Indholdsfortegnelse)
+
+---
 
 # Teknologier
 **Sammenligning af teknologier til indendørs positioning med ESP32**
