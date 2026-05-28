@@ -26,6 +26,11 @@ Slave B ──UDP──┘   (port 5006)
 Der findes flere metoder til at estimere position uden brug af GPS. I dette projekt undersøges især teknologier baseret på Wi-Fi og ESP32-enheder. Undersøgelse har strukket sig over fire dage, blandet med et andet smiley-projekt, hvor en bruger skulle tilkendegive tilfredshed ved et tryk på en knap. 
 
 # Indholdsfortegnelse
+1. [Logbog](#Logbog)
+2. [GDPR](#GDPR)
+3. [Hashing](#Hashing)  
+4. Trilaterering](#Trilaterering)
+5. Teknologier](#Teknologier)  
 
 
 
@@ -57,7 +62,7 @@ Vi arbejder videre med ESP-NOW.
 ### Dag 4
 Dokumentation og opgaveaflevering.
 
-
+[Home](#Indholdsfortegnelse)
 ---
 
 ## Gruppens undersøgelse og vurderinger omkring GDPR
@@ -190,7 +195,8 @@ Et centralt krav er, at forholdet **altid skal reguleres skriftligt**. Aftalen s
 
 
 
-# Sammenligning af teknologier til indendørs positioning med ESP32
+# Teknologier
+**Sammenligning af teknologier til indendørs positioning med ESP32**
 
 | Teknologi | Hvordan virker det? | Fordele | Ulemper | Egnet til projektet? |
 |---|---|---|---|---|
